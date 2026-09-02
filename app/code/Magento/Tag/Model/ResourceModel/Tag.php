@@ -148,7 +148,8 @@ class Tag extends AbstractDb
                     $finalSummary[$sid][$col] = 0;
                 }
             }
-            $finalSummary[$sid]['popularity'] = $finalSummary[$sid]['historical_uses'];
+            $finalSummary[$sid]['popularity'] = $finalSummary[$sid]['historical_uses']
+                + ($finalSummary[$sid]['base_popularity'] ?? 0);
         }
 
         $conn->delete($this->getTable('tag_summary'), ['tag_id = ?' => $tagId]);

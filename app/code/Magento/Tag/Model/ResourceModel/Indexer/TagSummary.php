@@ -20,10 +20,15 @@ class TagSummary extends AbstractDb
 
     /**
      * Full reindex: rebuild tag_summary for all approved tags across all stores.
+     *
+     * Truncates the table first so stale rows (for deleted relations) are removed.
+     * Only approved tags (tag.status = 1) are included, matching Mage 1 behaviour.
      */
     public function reindexAll(): void
     {
         $conn = $this->getConnection();
+
+        $conn->delete($this->getTable('tag_summary'));
 
         $select = $conn->select()
             ->from(
@@ -39,6 +44,11 @@ class TagSummary extends AbstractDb
                     'base_popularity' => new \Zend_Db_Expr('IFNULL(tp.base_popularity, 0)'),
                 ]
             )
+            ->join(
+                ['t' => $this->getTable('tag')],
+                't.tag_id = tr.tag_id AND t.status = ' . \Magento\Tag\Model\Tag::STATUS_APPROVED,
+                []
+            )
             ->joinLeft(
                 ['tp' => $this->getTable('tag_properties')],
                 'tp.tag_id = tr.tag_id AND tp.store_id = tr.store_id',
@@ -47,12 +57,10 @@ class TagSummary extends AbstractDb
             ->where('tr.active = ?', 1)
             ->group(['tr.tag_id', 'tr.store_id']);
 
-        $conn->query($conn->insertFromSelect(
-            $select,
-            $this->getTable('tag_summary'),
-            ['tag_id', 'store_id', 'customers', 'products', 'uses', 'historical_uses', 'popularity', 'base_popularity'],
-            \Magento\Framework\DB\Adapter\AdapterInterface::INSERT_ON_DUPLICATE
-        ));
+        $rows = $conn->fetchAll($select);
+        if ($rows) {
+            $conn->insertMultiple($this->getTable('tag_summary'), $rows);
+        }
     }
 
     /**
@@ -102,6 +110,11 @@ class TagSummary extends AbstractDb
                     'popularity'      => 'COUNT(tr.tag_relation_id)',
                     'base_popularity' => new \Zend_Db_Expr('IFNULL(tp.base_popularity, 0)'),
                 ]
+            )
+            ->join(
+                ['t' => $this->getTable('tag')],
+                't.tag_id = tr.tag_id AND t.status = ' . \Magento\Tag\Model\Tag::STATUS_APPROVED,
+                []
             )
             ->joinLeft(
                 ['tp' => $this->getTable('tag_properties')],
