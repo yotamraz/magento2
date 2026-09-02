@@ -9,10 +9,8 @@ namespace Magento\Tag\Test\Unit\Model;
 
 use Magento\Framework\Indexer\IndexerInterface;
 use Magento\Framework\Indexer\IndexerRegistry;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Registry;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Tag\Model\Tag;
-use Magento\Tag\Model\Tag\Relation;
 use Magento\Tag\Model\Tag\RelationFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -25,17 +23,14 @@ class TagTest extends TestCase
 
     protected function setUp(): void
     {
-        $contextMock = $this->createMock(Context::class);
-        $registryMock = $this->createMock(Registry::class);
         $this->relationFactoryMock = $this->createMock(RelationFactory::class);
         $this->indexerRegistryMock = $this->createMock(IndexerRegistry::class);
 
-        $this->tag = new Tag(
-            $contextMock,
-            $registryMock,
-            $this->relationFactoryMock,
-            $this->indexerRegistryMock
-        );
+        $objectManager = new ObjectManager($this);
+        $this->tag = $objectManager->getObject(Tag::class, [
+            'relationFactory'  => $this->relationFactoryMock,
+            'indexerRegistry'  => $this->indexerRegistryMock,
+        ]);
     }
 
     public function testStatusConstants(): void
@@ -70,7 +65,7 @@ class TagTest extends TestCase
 
     public function testSetAndGetName(): void
     {
-        $this->tag->setData('name', 'test-tag');
+        $this->tag->setName('test-tag');
         $this->assertSame('test-tag', $this->tag->getName());
     }
 

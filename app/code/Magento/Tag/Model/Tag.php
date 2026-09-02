@@ -91,6 +91,16 @@ class Tag extends AbstractModel implements TagInterface
 
     // --- TagInterface implementation ---
 
+    public function getName(): ?string
+    {
+        return $this->_getData(self::NAME);
+    }
+
+    public function setName(string $name): TagInterface
+    {
+        return $this->setData(self::NAME, $name);
+    }
+
     public function getTagId(): ?int
     {
         $id = $this->_getData(self::TAG_ID);
@@ -276,6 +286,6 @@ class Tag extends AbstractModel implements TagInterface
 
     public function getIdentities(): array
     {
-        return [self::CACHE_TAG . '_' . $this->getId()];
+        return [self::CACHE_TAG . '_' . ($this->getTagId() ?? $this->getId())];
     }
 }
