@@ -48,9 +48,15 @@ class TagSummary implements ActionInterface, MviewActionInterface
 
     /**
      * Mview incremental update — called with changelog IDs.
+     *
+     * IDs may be tag_ids (from the tag_relation subscription) or product entity_ids
+     * (from the catalog_product_entity subscription). Both subscriptions write to the
+     * same changelog, so resolveTagIds() joins tag_relation in both directions before
+     * passing the resolved tag IDs to reindexByIds().
      */
     public function execute($ids): void
     {
-        $this->resource->reindexByIds(array_map('intval', (array) $ids));
+        $tagIds = $this->resource->resolveTagIds(array_map('intval', (array) $ids));
+        $this->resource->reindexByIds($tagIds);
     }
 }

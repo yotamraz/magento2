@@ -56,6 +56,28 @@ class TagSummary extends AbstractDb
     }
 
     /**
+     * Resolve a mixed list of tag IDs and/or product entity IDs to tag IDs.
+     *
+     * The mview changelog combines IDs from two subscriptions: tag_relation
+     * (entity_column=tag_id) and catalog_product_entity (entity_column=entity_id).
+     * Both sets arrive in the same execute() call, so we look up both directions
+     * in tag_relation and return the union of matching tag IDs.
+     */
+    public function resolveTagIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        $conn   = $this->getConnection();
+        $select = $conn->select()
+            ->from(['tr' => $this->getTable('tag_relation')], ['tag_id'])
+            ->where('tr.tag_id IN (?) OR tr.product_id IN (?)', $ids, $ids)
+            ->distinct(true);
+
+        return array_map('intval', $conn->fetchCol($select));
+    }
+
+    /**
      * Partial reindex: rebuild tag_summary rows for the given tag IDs.
      */
     public function reindexByIds(array $tagIds): void

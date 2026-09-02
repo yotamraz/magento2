@@ -8,11 +8,9 @@
 <sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
     <section name="StorefrontProductTagsSection">
-        <element name="tagBlock" type="block" selector=".product-tags-list"/>
-        <element name="tagList" type="block" selector=".product-tags-list .tag-list"/>
-        <element name="tagItem" type="block" selector=".product-tags-list .tag-item"/>
-        <element name="tagLink" type="link" selector=".product-tags-list .tag-item a"/>
-        <element name="tagSubmitInput" type="input" selector="#tags-input"/>
-        <element name="tagSubmitButton" type="button" selector=".product-tags-list .action.primary.submit-tag"/>
+        <element name="tagBlock" type="block" selector=".product-tags"/>
+        <element name="tagList" type="block" selector=".product-tags .tags-list"/>
+        <element name="tagItem" type="block" selector=".product-tags .tag-item"/>
+        <element name="tagLink" type="link" selector=".product-tags .tag-item .tag-link"/>
     </section>
 </sections>
