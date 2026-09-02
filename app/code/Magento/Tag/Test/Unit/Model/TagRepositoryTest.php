@@ -109,7 +109,7 @@ class TagRepositoryTest extends TestCase
         $this->repository->delete($tagMock);
     }
 
-    public function testGetListAppliesCriteriaAndReturnsResults(): void
+    public function testGetListWithEmptyCollectionReturnsZeroCount(): void
     {
         $criterionMock     = $this->createMock(SearchCriteriaInterface::class);
         $collectionMock    = $this->createMock(Collection::class);
@@ -124,6 +124,29 @@ class TagRepositoryTest extends TestCase
         $searchResultsMock->expects($this->once())->method('setSearchCriteria')->with($criterionMock);
         $searchResultsMock->expects($this->once())->method('setItems')->with([]);
         $searchResultsMock->expects($this->once())->method('setTotalCount')->with(0);
+
+        $result = $this->repository->getList($criterionMock);
+        $this->assertSame($searchResultsMock, $result);
+    }
+
+    public function testGetListWithItemsPropagatesThemToSearchResults(): void
+    {
+        $criterionMock     = $this->createMock(SearchCriteriaInterface::class);
+        $collectionMock    = $this->createMock(Collection::class);
+        $searchResultsMock = $this->createMock(TagSearchResultsInterface::class);
+        $tag1              = $this->createMock(Tag::class);
+        $tag2              = $this->createMock(Tag::class);
+        $items             = [$tag1, $tag2];
+
+        $this->collectionFactoryMock->method('create')->willReturn($collectionMock);
+        $this->collectionProcessorMock->method('process');
+        $collectionMock->method('getItems')->willReturn($items);
+        $collectionMock->method('getSize')->willReturn(2);
+
+        $this->searchResultsFactoryMock->method('create')->willReturn($searchResultsMock);
+        $searchResultsMock->expects($this->once())->method('setSearchCriteria')->with($criterionMock);
+        $searchResultsMock->expects($this->once())->method('setItems')->with($items);
+        $searchResultsMock->expects($this->once())->method('setTotalCount')->with(2);
 
         $result = $this->repository->getList($criterionMock);
         $this->assertSame($searchResultsMock, $result);

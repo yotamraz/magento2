@@ -12,27 +12,44 @@
             <features value="Tag"/>
             <stories value="Admin Tag Approval Workflow"/>
             <title value="Admin can approve a pending tag"/>
-            <description value="When admin approves a pending tag, it transitions to Approved status and becomes visible on the storefront"/>
+            <description value="When admin approves a pending tag, it transitions to Approved status"/>
             <severity value="CRITICAL"/>
             <group value="tag"/>
             <group value="pr_exclude"/>
         </annotations>
         <before>
             <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+            <actionGroup ref="AdminNavigateToTagsPageActionGroup" stepKey="goToTagsPage"/>
+            <click selector="{{AdminTagGridSection.addTagButton}}" stepKey="clickAddTag"/>
+            <waitForPageLoad stepKey="waitForNewTagForm"/>
+            <fillField selector="#tag_name" userInput="pending-test-tag-{{msTimestamp}}" stepKey="fillTagName"/>
+            <selectOption selector="#tag_status" userInput="Pending" stepKey="selectPending"/>
+            <click selector=".page-actions .save" stepKey="saveTag"/>
+            <waitForPageLoad stepKey="waitAfterSave"/>
         </before>
         <after>
+            <actionGroup ref="AdminNavigateToTagsPageActionGroup" stepKey="goToTagsPage"/>
+            <actionGroup ref="AdminFilterTagsByNameActionGroup" stepKey="filterTag">
+                <argument name="tagName" value="pending-test-tag-{{msTimestamp}}"/>
+            </actionGroup>
+            <checkOption selector=".admin__data-grid-header .data-grid-multicheck-cell input" stepKey="selectAll"/>
+            <selectOption selector="{{AdminTagGridSection.massActionsSelect}}" userInput="Delete" stepKey="selectDelete"/>
+            <click selector="{{AdminTagGridSection.submitMassAction}}" stepKey="clickDelete"/>
+            <waitForElement selector="{{AdminTagGridSection.confirmModal}}" stepKey="waitModal"/>
+            <click selector="{{AdminTagGridSection.confirmModal}}" stepKey="confirmDelete"/>
+            <waitForPageLoad stepKey="waitAfterDelete"/>
             <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
         </after>
         <actionGroup ref="AdminNavigateToTagsPageActionGroup" stepKey="navigateToTagsPage"/>
         <actionGroup ref="AdminFilterTagsByNameActionGroup" stepKey="filterByTagName">
-            <argument name="tagName" value="pending-test-tag"/>
+            <argument name="tagName" value="pending-test-tag-{{msTimestamp}}"/>
         </actionGroup>
         <see userInput="Pending" selector=".data-grid tbody tr:nth-of-type(1)" stepKey="seeStatusIsPending"/>
         <actionGroup ref="AdminChangeTagStatusMassActionActionGroup" stepKey="approveTag">
             <argument name="status" value="Approved"/>
         </actionGroup>
         <actionGroup ref="AdminFilterTagsByNameActionGroup" stepKey="filterAgain">
-            <argument name="tagName" value="pending-test-tag"/>
+            <argument name="tagName" value="pending-test-tag-{{msTimestamp}}"/>
         </actionGroup>
         <see userInput="Approved" selector=".data-grid tbody tr:nth-of-type(1)" stepKey="seeStatusIsApproved"/>
     </test>
