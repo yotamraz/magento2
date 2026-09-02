@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_delete_after_done">
+        <observer name="magento_tag_process_product_after_delete"
+                  instance="Magento\Tag\Observer\ProcessProductAfterDeleteObserver"/>
+    </event>
+    <event name="catalog_product_save_commit_after">
+        <observer name="magento_tag_process_product_visibility_change"
+                  instance="Magento\Tag\Observer\ProcessProductVisibilityChangeObserver"/>
+    </event>
+</config>

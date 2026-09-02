@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Tag\Api\TagRepositoryInterface" type="Magento\Tag\Model\TagRepository"/>
+    <preference for="Magento\Tag\Api\TagRelationRepositoryInterface" type="Magento\Tag\Model\TagRelationRepository"/>
+    <preference for="Magento\Tag\Api\Data\TagInterface" type="Magento\Tag\Model\Tag"/>
+    <preference for="Magento\Tag\Api\Data\TagRelationInterface" type="Magento\Tag\Model\Tag\Relation"/>
+    <preference for="Magento\Tag\Api\Data\TagSearchResultsInterface" type="Magento\Framework\Api\SearchResults"/>
+    <type name="Magento\Framework\Model\ActionValidator\RemoveAction">
+        <arguments>
+            <argument name="protectedModels" xsi:type="array">
+                <item name="tag" xsi:type="string">Magento\Tag\Model\Tag</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

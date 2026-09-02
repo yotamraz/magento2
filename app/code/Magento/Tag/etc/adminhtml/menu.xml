@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Magento_Tag::tag"
+             title="Tags"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Catalog::catalog"
+             sortOrder="60"
+             resource="Magento_Tag::tag"/>
+        <add id="Magento_Tag::tag_all"
+             title="All Tags"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Tag::tag"
+             sortOrder="10"
+             action="tag/tag/index"
+             resource="Magento_Tag::tag_all"/>
+        <add id="Magento_Tag::tag_pending"
+             title="Pending Tags"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Tag::tag"
+             sortOrder="20"
+             action="tag/tag/pending"
+             resource="Magento_Tag::tag_pending"/>
+        <add id="Magento_Tag::report_tags"
+             title="Tags"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Reports::report_tags"
+             sortOrder="50"
+             resource="Magento_Tag::report_popular"/>
+        <add id="Magento_Tag::report_popular"
+             title="Popular"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Tag::report_tags"
+             sortOrder="10"
+             action="tag/report_tag/popular"
+             resource="Magento_Tag::report_popular"/>
+        <add id="Magento_Tag::report_customer"
+             title="Customers"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Tag::report_tags"
+             sortOrder="20"
+             action="tag/report_tag/customer"
+             resource="Magento_Tag::report_customer"/>
+        <add id="Magento_Tag::report_product"
+             title="Products"
+             translate="title"
+             module="Magento_Tag"
+             parent="Magento_Tag::report_tags"
+             sortOrder="30"
+             action="tag/report_tag/product"
+             resource="Magento_Tag::report_product"/>
+    </menu>
+</config>
