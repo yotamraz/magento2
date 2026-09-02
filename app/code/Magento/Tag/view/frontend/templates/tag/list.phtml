@@ -1,0 +1,25 @@
+<?php
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ *
+ * @var \Magento\Tag\Block\Product\ListTags $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+<?php if ($block->getCount()): ?>
+<div class="product-tags" id="product-tags-<?= $escaper->escapeHtmlAttr($block->getProductId()) ?>">
+    <strong class="label"><?= $escaper->escapeHtml(__('Tags:')) ?></strong>
+    <ul class="tags-list">
+        <?php foreach ($block->getTags() as $tag): ?>
+        <li class="tag-item">
+            <a href="<?= $escaper->escapeUrl($block->getTaggedProductsUrl($tag)) ?>"
+               title="<?= $escaper->escapeHtmlAttr($tag->getName()) ?>"
+               class="tag-link">
+                <?= $escaper->escapeHtml($tag->getName()) ?>
+            </a>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
+<?php endif; ?>

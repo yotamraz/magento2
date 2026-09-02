@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="product.info.main">
+            <block class="Magento\Tag\Block\Product\ListTags"
+                   name="product.tags"
+                   template="Magento_Tag::tag/list.phtml"
+                   after="product.info.addtocart"/>
+        </referenceContainer>
+    </body>
+</page>

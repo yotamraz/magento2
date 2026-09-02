@@ -32,4 +32,11 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Customer\CustomerData\SectionPoolInterface">
+        <arguments>
+            <argument name="sectionSourceMap" xsi:type="array">
+                <item name="tag" xsi:type="string">Magento\Tag\CustomerData\Tags</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
