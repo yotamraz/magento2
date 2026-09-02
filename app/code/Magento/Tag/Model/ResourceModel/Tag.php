@@ -95,7 +95,7 @@ class Tag extends AbstractDb
     /**
      * Extend load select to optionally join base_popularity from tag_properties.
      */
-    protected function _getLoadSelect(string $field, mixed $value, AbstractModel $object): Select
+    protected function _getLoadSelect($field, $value, $object)
     {
         $select = parent::_getLoadSelect($field, $value, $object);
         if ($object->getData('add_base_popularity') && $object->getData('store_id')) {
