@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="tag_summary"
+             view_id="tag_summary"
+             class="Magento\Tag\Model\Indexer\TagSummary"
+             label="Tag Summary"
+             description="Rebuilds tag popularity and product/customer counts in tag_summary"
+             primary="tag">
+        <fieldset name="tag" source="Magento\Tag\Model\ResourceModel\Tag\Collection"
+                  provider="Magento\Indexer\Model\Fieldset\ProductFieldset">
+            <field name="tag_id" xsi:type="int" handler="Magento\Indexer\Model\Handler\DefaultHandler"/>
+        </fieldset>
+    </indexer>
+</config>

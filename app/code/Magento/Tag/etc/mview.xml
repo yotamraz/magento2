@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Mview/etc/mview.xsd">
+    <view id="tag_summary"
+          class="Magento\Tag\Model\Indexer\TagSummary"
+          group="indexer"
+          walker="Magento\Framework\Mview\View\SubscriptionFactory">
+        <subscriptions>
+            <table name="tag_relation" entity_column="tag_id"/>
+            <table name="catalog_product_entity" entity_column="entity_id"/>
+        </subscriptions>
+    </view>
+</config>
