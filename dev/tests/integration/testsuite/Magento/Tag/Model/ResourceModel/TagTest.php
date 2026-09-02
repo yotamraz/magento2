@@ -9,26 +9,24 @@ namespace Magento\Tag\Model\ResourceModel;
 
 use Magento\Tag\Model\Tag;
 use Magento\Tag\Model\TagFactory;
+use Magento\Tag\Model\ResourceModel\Tag as TagResource;
 use Magento\TestFramework\Fixture\DbIsolation;
 use Magento\TestFramework\Helper\Bootstrap;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Integration tests for Magento\Tag\Model\ResourceModel\Tag.
- *
- * Requires a fully bootstrapped Magento 2 integration test environment.
- * All tests run inside a database transaction that is rolled back after each test.
  */
 #[DbIsolation(true)]
 class TagTest extends TestCase
 {
-    private Tag $tagResource;
+    private TagResource $tagResource;
     private TagFactory $tagFactory;
 
     protected function setUp(): void
     {
         $objectManager    = Bootstrap::getObjectManager();
-        $this->tagResource = $objectManager->get(Tag::class);
+        $this->tagResource = $objectManager->get(TagResource::class);
         $this->tagFactory  = $objectManager->get(TagFactory::class);
     }
 
@@ -36,7 +34,7 @@ class TagTest extends TestCase
     {
         $tag = $this->tagFactory->create();
         $tag->setName('integration-test-tag-' . uniqid())
-            ->setStatus(\Magento\Tag\Model\Tag::STATUS_PENDING);
+            ->setStatus(Tag::STATUS_PENDING);
 
         $this->tagResource->save($tag);
         $this->assertNotNull($tag->getId(), 'Tag ID should be set after save');
@@ -44,14 +42,14 @@ class TagTest extends TestCase
         $loaded = $this->tagFactory->create();
         $this->tagResource->load($loaded, $tag->getId());
         $this->assertSame($tag->getName(), $loaded->getName());
-        $this->assertSame(\Magento\Tag\Model\Tag::STATUS_PENDING, $loaded->getStatus());
+        $this->assertSame(Tag::STATUS_PENDING, $loaded->getStatus());
     }
 
     public function testLoadByName(): void
     {
         $uniqueName = 'loadbyname-test-' . uniqid();
         $tag = $this->tagFactory->create();
-        $tag->setName($uniqueName)->setStatus(\Magento\Tag\Model\Tag::STATUS_APPROVED);
+        $tag->setName($uniqueName)->setStatus(Tag::STATUS_APPROVED);
         $this->tagResource->save($tag);
 
         $found = $this->tagFactory->create();
@@ -69,7 +67,7 @@ class TagTest extends TestCase
     public function testDeleteRemovesTag(): void
     {
         $tag = $this->tagFactory->create();
-        $tag->setName('delete-test-' . uniqid())->setStatus(\Magento\Tag\Model\Tag::STATUS_DISABLED);
+        $tag->setName('delete-test-' . uniqid())->setStatus(Tag::STATUS_DISABLED);
         $this->tagResource->save($tag);
         $tagId = $tag->getId();
 
@@ -85,13 +83,12 @@ class TagTest extends TestCase
         $name = 'merge-test-' . uniqid();
 
         $pending = $this->tagFactory->create();
-        $pending->setName($name)->setStatus(\Magento\Tag\Model\Tag::STATUS_PENDING);
+        $pending->setName($name)->setStatus(Tag::STATUS_PENDING);
         $this->tagResource->save($pending);
         $pendingId = $pending->getId();
 
-        // Save a new tag with same name and approved status — should reuse the pending row.
         $approved = $this->tagFactory->create();
-        $approved->setName($name)->setStatus(\Magento\Tag\Model\Tag::STATUS_APPROVED);
+        $approved->setName($name)->setStatus(Tag::STATUS_APPROVED);
         $this->tagResource->save($approved);
 
         $this->assertSame($pendingId, $approved->getId(), 'Approved tag should reuse pending row ID');
