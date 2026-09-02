@@ -280,7 +280,6 @@ class Tag extends AbstractModel implements TagInterface
 
     protected function _beforeDelete(): static
     {
-        $this->_protectFromNonAdmin();
         return parent::_beforeDelete();
     }
 
