@@ -1,0 +1,13 @@
+{
+  "name": "magento-tag-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright E2E tests for the Magento_Tag module (foundation milestone)",
+  "scripts": {
+    "test": "npx playwright test --config=playwright.config.ts",
+    "test:headed": "npx playwright test --config=playwright.config.ts --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}
