@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="AdminNavigateToTagsPageActionGroup">
+        <annotations>
+            <description>Navigates to the Admin Tags index page via direct URL.</description>
+        </annotations>
+        <amOnPage url="{{AdminTagsIndexPage.url}}" stepKey="goToTagsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+    </actionGroup>
+
+    <actionGroup name="AdminNavigateToPendingTagsPageActionGroup">
+        <annotations>
+            <description>Navigates to the Admin Pending Tags page via direct URL.</description>
+        </annotations>
+        <amOnPage url="{{AdminTagsPendingPage.url}}" stepKey="goToPendingTagsPage"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+    </actionGroup>
+
+    <actionGroup name="AdminFilterTagsByNameActionGroup">
+        <annotations>
+            <description>Filters the admin tag grid by tag name.</description>
+        </annotations>
+        <arguments>
+            <argument name="tagName" type="string"/>
+        </arguments>
+        <fillField selector="{{AdminTagGridSection.tagNameFilter}}" userInput="{{tagName}}" stepKey="fillTagName"/>
+        <click selector="{{AdminTagGridSection.searchButton}}" stepKey="clickSearch"/>
+        <waitForPageLoad stepKey="waitForGrid"/>
+    </actionGroup>
+
+    <actionGroup name="AdminChangeTagStatusMassActionActionGroup">
+        <annotations>
+            <description>Selects all tags in the grid and changes their status via mass action.</description>
+        </annotations>
+        <arguments>
+            <argument name="status" type="string" defaultValue="Approved"/>
+        </arguments>
+        <checkOption selector=".admin__data-grid-header .data-grid-multicheck-cell input" stepKey="checkSelectAll"/>
+        <selectOption selector="{{AdminTagGridSection.massActionsSelect}}" userInput="{{status}}" stepKey="selectMassAction"/>
+        <click selector="{{AdminTagGridSection.submitMassAction}}" stepKey="clickSubmit"/>
+        <waitForElement selector="{{AdminTagGridSection.confirmModal}}" stepKey="waitForModal"/>
+        <click selector="{{AdminTagGridSection.confirmModal}}" stepKey="confirmAction"/>
+        <waitForPageLoad stepKey="waitForPageLoad"/>
+    </actionGroup>
+</actionGroups>

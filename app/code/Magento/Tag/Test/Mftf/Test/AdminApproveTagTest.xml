@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminApproveTagTest">
+        <annotations>
+            <features value="Tag"/>
+            <stories value="Admin Tag Approval Workflow"/>
+            <title value="Admin can approve a pending tag"/>
+            <description value="When admin approves a pending tag, it transitions to Approved status and becomes visible on the storefront"/>
+            <severity value="CRITICAL"/>
+            <group value="tag"/>
+            <group value="pr_exclude"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+        <actionGroup ref="AdminNavigateToTagsPageActionGroup" stepKey="navigateToTagsPage"/>
+        <actionGroup ref="AdminFilterTagsByNameActionGroup" stepKey="filterByTagName">
+            <argument name="tagName" value="pending-test-tag"/>
+        </actionGroup>
+        <see userInput="Pending" selector=".data-grid tbody tr:nth-of-type(1)" stepKey="seeStatusIsPending"/>
+        <actionGroup ref="AdminChangeTagStatusMassActionActionGroup" stepKey="approveTag">
+            <argument name="status" value="Approved"/>
+        </actionGroup>
+        <actionGroup ref="AdminFilterTagsByNameActionGroup" stepKey="filterAgain">
+            <argument name="tagName" value="pending-test-tag"/>
+        </actionGroup>
+        <see userInput="Approved" selector=".data-grid tbody tr:nth-of-type(1)" stepKey="seeStatusIsApproved"/>
+    </test>
+</tests>

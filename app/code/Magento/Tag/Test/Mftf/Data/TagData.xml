@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:DataGenerator/etc/dataProfileSchema.xsd">
+    <entity name="DefaultTag" type="tag">
+        <data key="name">default-tag</data>
+        <data key="status">1</data>
+        <data key="store_id">1</data>
+        <data key="first_customer_id">0</data>
+    </entity>
+
+    <entity name="PendingTag" type="tag">
+        <data key="name">pending-test-tag</data>
+        <data key="status">0</data>
+        <data key="store_id">1</data>
+        <data key="first_customer_id">0</data>
+    </entity>
+
+    <entity name="ApprovedTag" type="tag">
+        <data key="name">approved-test-tag</data>
+        <data key="status">1</data>
+        <data key="store_id">1</data>
+        <data key="first_customer_id">0</data>
+    </entity>
+</entities>

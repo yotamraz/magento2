@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="AdminTagsIndexPageLoadsTest">
+        <annotations>
+            <features value="Tag"/>
+            <stories value="Admin Tags Management"/>
+            <title value="Admin Tags index page loads without errors"/>
+            <description value="Admin should be able to navigate to the Tags index page and see the tag grid"/>
+            <severity value="CRITICAL"/>
+            <group value="tag"/>
+            <group value="pr_exclude"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+        <actionGroup ref="AdminNavigateToTagsPageActionGroup" stepKey="navigateToTagsPage"/>
+        <seeInCurrentUrl url="tag/tag/index" stepKey="seeTagsUrl"/>
+        <waitForElementVisible selector=".page-main-actions" stepKey="waitForAddButton"/>
+    </test>
+
+    <test name="AdminPendingTagsPageLoadsTest">
+        <annotations>
+            <features value="Tag"/>
+            <stories value="Admin Tags Management"/>
+            <title value="Admin Pending Tags page loads without errors"/>
+            <description value="Admin should be able to navigate to the Pending Tags page"/>
+            <severity value="MAJOR"/>
+            <group value="tag"/>
+            <group value="pr_exclude"/>
+        </annotations>
+        <before>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+        </before>
+        <after>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+        <actionGroup ref="AdminNavigateToPendingTagsPageActionGroup" stepKey="navigateToPendingTagsPage"/>
+        <seeInCurrentUrl url="tag/tag/pending" stepKey="seePendingTagsUrl"/>
+        <waitForPageLoad stepKey="waitForLoad"/>
+    </test>
+</tests>

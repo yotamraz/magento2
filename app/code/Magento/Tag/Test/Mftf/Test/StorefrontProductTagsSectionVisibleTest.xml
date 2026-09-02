@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="StorefrontProductTagsSectionVisibleTest">
+        <annotations>
+            <features value="Tag"/>
+            <stories value="Product Page Tag Display"/>
+            <title value="Product page renders the tags section"/>
+            <description value="A product detail page should display the tags block after the Magento_Tag module is enabled"/>
+            <severity value="CRITICAL"/>
+            <group value="tag"/>
+            <group value="pr_exclude"/>
+        </annotations>
+        <before>
+            <createData entity="SimpleProduct2" createDataKey="product" stepKey="createProduct"/>
+            <actionGroup ref="AdminLoginActionGroup" stepKey="loginAsAdmin"/>
+        </before>
+        <after>
+            <deleteData createDataKey="product" stepKey="deleteProduct"/>
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logout"/>
+        </after>
+        <amOnPage url="$product.custom_attributes[url_key]$.html" stepKey="navigateToProduct"/>
+        <waitForPageLoad stepKey="waitForProductPage"/>
+        <waitForElementVisible selector="{{StorefrontProductTagsSection.tagBlock}}" stepKey="seeTagBlock"/>
+    </test>
+</tests>

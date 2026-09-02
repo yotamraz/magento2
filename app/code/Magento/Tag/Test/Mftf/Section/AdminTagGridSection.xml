@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright 2024 Adobe
+ * All Rights Reserved.
+ */
+-->
+<sections xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="urn:magento:mftf:Page/etc/SectionObject.xsd">
+    <section name="AdminTagGridSection">
+        <element name="tagNameFilter" type="input" selector="#tagGrid_filter_name"/>
+        <element name="statusFilter" type="select" selector="#tagGrid_filter_status"/>
+        <element name="searchButton" type="button" selector="button[data-action='grid-filter-apply']"/>
+        <element name="resetButton" type="button" selector="button[data-action='grid-filter-reset']"/>
+        <element name="firstRow" type="block" selector=".data-grid tbody tr:nth-of-type(1)"/>
+        <element name="firstRowTagName" type="text" selector=".data-grid tbody tr:nth-of-type(1) td:nth-of-type(2)"/>
+        <element name="firstRowStatus" type="text" selector=".data-grid tbody tr:nth-of-type(1) td:nth-of-type(4)"/>
+        <element name="massActionsSelect" type="select" selector="#tagGrid_massaction-select"/>
+        <element name="submitMassAction" type="button" selector=".admin__grid-massaction-form .action-default.scalable"/>
+        <element name="confirmModal" type="button" selector=".modal-popup.confirm button.action-accept"/>
+        <element name="addTagButton" type="button" selector=".page-actions .add"/>
+    </section>
+</sections>
