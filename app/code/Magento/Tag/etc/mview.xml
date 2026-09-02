@@ -13,7 +13,6 @@
           walker="Magento\Framework\Mview\View\SubscriptionFactory">
         <subscriptions>
             <table name="tag_relation" entity_column="tag_id"/>
-            <table name="catalog_product_entity" entity_column="entity_id"/>
         </subscriptions>
     </view>
 </config>

@@ -278,11 +278,6 @@ class Tag extends AbstractModel implements TagInterface
         return parent::_afterSave();
     }
 
-    protected function _beforeDelete(): static
-    {
-        return parent::_beforeDelete();
-    }
-
     public function getIdentities(): array
     {
         return [self::CACHE_TAG . '_' . ($this->getTagId() ?? $this->getId())];
