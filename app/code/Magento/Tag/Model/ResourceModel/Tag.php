@@ -87,9 +87,7 @@ class Tag extends AbstractDb
         if ($name) {
             $read = $this->getConnection();
             $select = $read->select();
-            if ($this->string->strlen($name) > 255) {
-                $name = $this->string->substr($name, 0, 255);
-            }
+            $name = $this->truncateName($name);
 
             $select->from($this->getMainTable())
                 ->where('name = :name');
@@ -121,8 +119,10 @@ class Tag extends AbstractDb
             }
         }
 
-        if ($this->string->strlen((string)$object->getName()) > 255) {
-            $object->setName($this->string->substr($object->getName(), 0, 255));
+        $name = (string)$object->getName();
+        $truncated = $this->truncateName($name);
+        if ($truncated !== $name) {
+            $object->setName($truncated);
         }
 
         return parent::_beforeSave($object);
@@ -182,51 +182,20 @@ class Tag extends AbstractDb
     protected function _getAggregationPerStoreView($tagId)
     {
         $readAdapter = $this->getConnection();
-        $selectLocal = $readAdapter->select()
-            ->from(
-                ['main'  => $this->getTable('tag_relation')],
-                [
-                    'customers' => 'COUNT(DISTINCT main.customer_id)',
-                    'products'  => 'COUNT(DISTINCT main.product_id)',
-                    'store_id',
-                    'uses'      => 'COUNT(main.tag_relation_id)',
-                ]
-            )
-            ->join(
-                ['store' => $this->getTable('store')],
-                'store.store_id = main.store_id AND store.store_id > 0',
-                []
-            )
-            ->join(
-                ['product_website' => $this->getTable('catalog_product_website')],
-                'product_website.website_id = store.website_id AND product_website.product_id = main.product_id',
-                []
-            )
-            ->where('main.tag_id = :tag_id')
-            ->where('main.active = 1')
-            ->group('main.store_id');
+        $selectLocal = $this->getActiveRelationSelect(
+            [
+                'customers' => 'COUNT(DISTINCT main.customer_id)',
+                'products'  => 'COUNT(DISTINCT main.product_id)',
+                'store_id',
+                'uses'      => 'COUNT(main.tag_relation_id)',
+            ]
+        )->group('main.store_id');
 
         $selectLocalResult = $readAdapter->fetchAll($selectLocal, ['tag_id' => $tagId]);
 
-        $selectHistorical = $readAdapter->select()
-            ->from(
-                ['main' => $this->getTable('tag_relation')],
-                ['historical_uses' => 'COUNT(main.tag_relation_id)',
-                    'store_id']
-            )
-            ->join(
-                ['store' => $this->getTable('store')],
-                'store.store_id = main.store_id AND store.store_id > 0',
-                []
-            )
-            ->join(
-                ['product_website' => $this->getTable('catalog_product_website')],
-                'product_website.website_id = store.website_id AND product_website.product_id = main.product_id',
-                []
-            )
-            ->group('main.store_id')
-            ->where('main.tag_id = :tag_id')
-            ->where('main.active = 1');
+        $selectHistorical = $this->getActiveRelationSelect(
+            ['historical_uses' => 'COUNT(main.tag_relation_id)', 'store_id']
+        )->group('main.store_id');
 
         $selectHistoricalResult = $readAdapter->fetchAll($selectHistorical, ['tag_id' => $tagId]);
 
@@ -252,51 +221,23 @@ class Tag extends AbstractDb
     {
         $readAdapter = $this->getConnection();
         // customers and products stats
-        $selectGlobal = $readAdapter->select()
-            ->from(
-                ['main' => $this->getTable('tag_relation')],
-                [
-                    'customers' => 'COUNT(DISTINCT main.customer_id)',
-                    'products'  => 'COUNT(DISTINCT main.product_id)',
-                    'store_id'  => new Expression('0'),
-                    'uses'      => 'COUNT(main.tag_relation_id)',
-                ]
-            )
-            ->join(
-                ['store' => $this->getTable('store')],
-                'store.store_id=main.store_id AND store.store_id>0',
-                []
-            )
-            ->join(
-                ['product_website' => $this->getTable('catalog_product_website')],
-                'product_website.website_id = store.website_id AND product_website.product_id = main.product_id',
-                []
-            )
-            ->where('main.tag_id = :tag_id')
-            ->where('main.active = 1');
+        $selectGlobal = $this->getActiveRelationSelect(
+            [
+                'customers' => 'COUNT(DISTINCT main.customer_id)',
+                'products'  => 'COUNT(DISTINCT main.product_id)',
+                'store_id'  => new Expression('0'),
+                'uses'      => 'COUNT(main.tag_relation_id)',
+            ]
+        );
         $result = $readAdapter->fetchRow($selectGlobal, ['tag_id' => $tagId]);
         if (!$result) {
             return [];
         }
 
         // historical uses stats
-        $selectHistoricalGlobal = $readAdapter->select()
-            ->from(
-                ['main' => $this->getTable('tag_relation')],
-                ['historical_uses' => 'COUNT(main.tag_relation_id)']
-            )
-            ->join(
-                ['store' => $this->getTable('store')],
-                'store.store_id = main.store_id AND store.store_id > 0',
-                []
-            )
-            ->join(
-                ['product_website' => $this->getTable('catalog_product_website')],
-                'product_website.website_id = store.website_id AND product_website.product_id = main.product_id',
-                []
-            )
-            ->where('main.tag_id = :tag_id')
-            ->where('main.active = 1');
+        $selectHistoricalGlobal = $this->getActiveRelationSelect(
+            ['historical_uses' => 'COUNT(main.tag_relation_id)']
+        );
         $result['historical_uses'] = (int)$readAdapter->fetchOne($selectHistoricalGlobal, ['tag_id' => $tagId]);
 
         return $result;
@@ -456,5 +397,40 @@ class Tag extends AbstractDb
         $object->setVisibleInStoreIds($storeIds);
 
         return $this;
+    }
+
+    /**
+     * Build select of active tag relations joined with store and product website
+     *
+     * @param array $columns
+     * @return \Magento\Framework\DB\Select
+     */
+    private function getActiveRelationSelect(array $columns)
+    {
+        return $this->getConnection()->select()
+            ->from(['main' => $this->getTable('tag_relation')], $columns)
+            ->join(
+                ['store' => $this->getTable('store')],
+                'store.store_id = main.store_id AND store.store_id > 0',
+                []
+            )
+            ->join(
+                ['product_website' => $this->getTable('catalog_product_website')],
+                'product_website.website_id = store.website_id AND product_website.product_id = main.product_id',
+                []
+            )
+            ->where('main.tag_id = :tag_id')
+            ->where('main.active = 1');
+    }
+
+    /**
+     * Truncate tag name to the 255 character column limit
+     *
+     * @param string $name
+     * @return string
+     */
+    private function truncateName($name)
+    {
+        return $this->string->strlen($name) > 255 ? $this->string->substr($name, 0, 255) : $name;
     }
 }
