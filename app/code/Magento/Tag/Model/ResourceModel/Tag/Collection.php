@@ -23,20 +23,6 @@ use Magento\Tag\Model\Tag\Relation;
 class Collection extends AbstractCollection
 {
     /**
-     * Use getFlag('store_filter') & setFlag('store_filter', true) instead.
-     *
-     * @var bool
-     */
-    protected $_isStoreFilter = false;
-
-    /**
-     * Joined tables
-     *
-     * @var array
-     */
-    protected $_joinFlags = [];
-
-    /**
      * Mapping for fields
      *
      * @var array
