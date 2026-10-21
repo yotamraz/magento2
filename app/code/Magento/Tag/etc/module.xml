@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Ported from Mage_Tag (magento-lts). Original notice: Academic Free License (AFL 3.0).
+ * For copyright and license information, see LICENSE_AFL.txt.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Magento_Tag">
+        <sequence>
+            <module name="Magento_Store"/>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Catalog"/>
+            <module name="Magento_Backend"/>
+        </sequence>
+    </module>
+</config>
