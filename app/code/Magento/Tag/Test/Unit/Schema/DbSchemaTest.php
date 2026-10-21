@@ -10,7 +10,7 @@ namespace Magento\Tag\Test\Unit\Schema;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Characterization test: etc/db_schema.xml must stay identical to legacy Mage_Tag install-1.6.0.0
+ * Characterization test: etc/db_schema.xml must stay identical to the legacy Tag module install-1.6.0.0 script
  */
 class DbSchemaTest extends TestCase
 {
