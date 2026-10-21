@@ -60,4 +60,92 @@ class TagTest extends TestCase
 
         $this->assertSame(Tag::ADD_STATUS_EXIST, $loaded->saveRelation($productId, $customerId, $storeId));
     }
+
+    /**
+     * @param string $name
+     * @param int $status
+     * @param int $customerId
+     * @return Tag
+     */
+    private function createTag(string $name, int $status, int $customerId): Tag
+    {
+        $tag = Bootstrap::getObjectManager()->get(TagFactory::class)->create();
+        $tag->setName($name)
+            ->setStatus($status)
+            ->setFirstCustomerId($customerId)
+            ->setFirstStoreId(1)
+            ->save();
+
+        return $tag;
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testSaveRelationPendingTag(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        $productId = (int)$objectManager->get(ProductRepositoryInterface::class)->get('simple')->getId();
+        $customerId = (int)$objectManager->get(CustomerRepositoryInterface::class)->get('customer@example.com')->getId();
+
+        $tag = $this->createTag('pending-tag', Tag::STATUS_PENDING, $customerId);
+        $this->assertSame(Tag::ADD_STATUS_NEW, $tag->saveRelation($productId, $customerId, 1));
+
+        $relation = $objectManager->get(RelationFactory::class)->create()
+            ->loadByTagCustomer($productId, (int)$tag->getId(), $customerId, 1);
+        $this->assertNotEmpty($relation->getId());
+
+        $tag->setStoreId(1)->setStatusFilter(Tag::STATUS_APPROVED);
+        $this->assertSame([], $tag->getRelatedProductIds());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testSaveRelationDisabledTagPromotesToPending(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        $productId = (int)$objectManager->get(ProductRepositoryInterface::class)->get('simple')->getId();
+        $customerId = (int)$objectManager->get(CustomerRepositoryInterface::class)->get('customer@example.com')->getId();
+
+        $tag = $this->createTag('disabled-tag', Tag::STATUS_DISABLED, $customerId);
+        $this->assertSame(Tag::ADD_STATUS_NEW, $tag->saveRelation($productId, $customerId, 1));
+
+        $reloaded = $objectManager->get(TagFactory::class)->create()->loadByName('disabled-tag');
+        $this->assertEquals(Tag::STATUS_PENDING, $reloaded->getStatus());
+
+        $reloaded->setStatus(Tag::STATUS_DISABLED);
+        $this->assertSame(Tag::ADD_STATUS_REJECTED, $reloaded->saveRelation($productId, $customerId, 1));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Catalog/_files/product_simple.php
+     * @magentoDataFixture Magento/Customer/_files/customer.php
+     */
+    public function testReactivateInactiveRelation(): void
+    {
+        $objectManager = Bootstrap::getObjectManager();
+        $productId = (int)$objectManager->get(ProductRepositoryInterface::class)->get('simple')->getId();
+        $customerId = (int)$objectManager->get(CustomerRepositoryInterface::class)->get('customer@example.com')->getId();
+        $relationFactory = $objectManager->get(RelationFactory::class);
+
+        $tag = $this->createTag('reactivate-tag', Tag::STATUS_APPROVED, $customerId);
+        $this->assertSame(Tag::ADD_STATUS_SUCCESS, $tag->saveRelation($productId, $customerId, 1));
+
+        $relation = $relationFactory->create()->loadByTagCustomer($productId, (int)$tag->getId(), $customerId, 1);
+        $relation->setActive(Relation::STATUS_NOT_ACTIVE)->save();
+        $this->assertEquals(
+            Relation::STATUS_NOT_ACTIVE,
+            $relationFactory->create()->loadByTagCustomer($productId, (int)$tag->getId(), $customerId, 1)
+                ->getActive()
+        );
+
+        $this->assertSame(Tag::ADD_STATUS_EXIST, $tag->saveRelation($productId, $customerId, 1));
+
+        $reloaded = $relationFactory->create()->loadByTagCustomer($productId, (int)$tag->getId(), $customerId, 1);
+        $this->assertEquals(Relation::STATUS_ACTIVE, $reloaded->getActive());
+        $this->assertEquals($relation->getId(), $reloaded->getId());
+    }
 }
