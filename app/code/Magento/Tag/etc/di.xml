@@ -16,4 +16,11 @@
             <argument name="storage" xsi:type="object">Magento\Tag\Model\Session\Storage</argument>
         </arguments>
     </type>
+    <type name="Magento\Framework\Model\ActionValidator\RemoveAction">
+        <arguments>
+            <argument name="protectedModels" xsi:type="array">
+                <item name="tag" xsi:type="string">Magento\Tag\Model\Tag</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
